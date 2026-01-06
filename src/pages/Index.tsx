@@ -9,6 +9,11 @@ import Icon from '@/components/ui/icon';
 const Index = () => {
   const [activeTab, setActiveTab] = useState('feed');
   const [selectedLocation, setSelectedLocation] = useState<number | null>(null);
+  const [selectedCity, setSelectedCity] = useState('Москва');
+  const [chatView, setChatView] = useState<'list' | 'chat' | 'wall'>('list');
+  const [messageText, setMessageText] = useState('');
+  const [showStickerPicker, setShowStickerPicker] = useState(false);
+  const [userFishcoins, setUserFishcoins] = useState(2450);
 
   const mockPosts = [
     {
@@ -61,6 +66,50 @@ const Index = () => {
     { title: 'Зимняя рыбалка на Селигере', date: '29 янв', participants: 62 }
   ];
 
+  const cities = [
+    { name: 'Москва', members: 12453, online: 842 },
+    { name: 'Санкт-Петербург', members: 8234, online: 531 },
+    { name: 'Казань', members: 3421, online: 287 },
+    { name: 'Новосибирск', members: 2876, online: 198 },
+    { name: 'Екатеринбург', members: 2654, online: 176 }
+  ];
+
+  const mockMessages = [
+    { id: 1, user: 'Алексей Р.', text: 'Сегодня отличный клёв на Москва-реке!', time: '14:23', avatar: '' },
+    { id: 2, user: 'Мария К.', text: 'Кто едет на Селигер в выходные?', time: '14:25', avatar: '' },
+    { id: 3, user: 'Дмитрий В.', text: 'Нашёл интересное место в Подмосковье 🗺️', time: '14:30', avatar: '' },
+    { id: 4, user: 'Вы', text: 'Поделитесь координатами!', time: '14:32', avatar: '', isOwn: true }
+  ];
+
+  const cityWallPosts = [
+    {
+      id: 1,
+      user: { name: 'Иван П.', city: 'Москва', fishcoins: 1890 },
+      content: 'Сегодняшний улов - окунь 2.5 кг!',
+      image: '🐟',
+      likes: 45,
+      comments: 12,
+      reactions: { fire: 8, heart: 15, clap: 12 },
+      time: '1 час назад'
+    },
+    {
+      id: 2,
+      user: { name: 'Ольга С.', city: 'Москва', fishcoins: 3240 },
+      content: 'Невероятная находка! Монета 1850 года',
+      image: '🪙',
+      likes: 89,
+      comments: 24,
+      reactions: { fire: 32, heart: 28, clap: 29 },
+      time: '3 часа назад'
+    }
+  ];
+
+  const stickerPacks = [
+    { id: 1, name: 'Рыбаки', emoji: '🎣', price: 100, stickers: ['🐟', '🎣', '🐠', '🦈', '🐡', '🦞'] },
+    { id: 2, name: 'Копатели', emoji: '⚒️', price: 150, stickers: ['⚒️', '🪙', '💎', '🏺', '👑', '⚱️'] },
+    { id: 3, name: 'Эмоции', emoji: '😎', price: 50, stickers: ['😎', '🔥', '💪', '👍', '🎉', '⭐'] }
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
@@ -94,9 +143,17 @@ const Index = () => {
                 <Icon name="Trophy" className="mr-2 h-4 w-4" />
                 Рейтинг
               </Button>
+              <Button variant="ghost" onClick={() => setActiveTab('cities')}>
+                <Icon name="MapPin" className="mr-2 h-4 w-4" />
+                Города
+              </Button>
             </nav>
 
             <div className="flex items-center gap-2">
+              <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 text-accent font-semibold">
+                <Icon name="Coins" className="h-4 w-4" />
+                {userFishcoins} FC
+              </div>
               <Button size="icon" variant="ghost">
                 <Icon name="MessageCircle" className="h-5 w-5" />
               </Button>
@@ -110,8 +167,9 @@ const Index = () => {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 md:hidden">
+          <TabsList className="grid w-full grid-cols-6 md:hidden">
             <TabsTrigger value="feed">Лента</TabsTrigger>
+            <TabsTrigger value="cities">Города</TabsTrigger>
             <TabsTrigger value="map">Карта</TabsTrigger>
             <TabsTrigger value="profile">Я</TabsTrigger>
             <TabsTrigger value="communities">Клубы</TabsTrigger>
@@ -529,6 +587,316 @@ const Index = () => {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          <TabsContent value="cities" className="space-y-4">
+            {chatView === 'list' && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Icon name="MapPin" className="h-5 w-5 text-primary" />
+                    Городские чаты
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {cities.map((city, index) => (
+                      <button
+                        key={index}
+                        onClick={() => {
+                          setSelectedCity(city.name);
+                          setChatView('chat');
+                        }}
+                        className="w-full p-4 rounded-lg border hover:bg-muted/50 transition-colors text-left"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h3 className="font-bold text-lg mb-1">{city.name}</h3>
+                            <div className="flex gap-4 text-sm text-muted-foreground">
+                              <span className="flex items-center gap-1">
+                                <Icon name="Users" className="h-3 w-3" />
+                                {city.members}
+                              </span>
+                              <span className="flex items-center gap-1 text-green-600">
+                                <div className="h-2 w-2 rounded-full bg-green-600"></div>
+                                {city.online} онлайн
+                              </span>
+                            </div>
+                          </div>
+                          <Icon name="ChevronRight" className="h-5 w-5 text-muted-foreground" />
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {chatView === 'chat' && (
+              <div className="space-y-4">
+                <Card>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => setChatView('list')}
+                        >
+                          <Icon name="ArrowLeft" className="h-5 w-5" />
+                        </Button>
+                        <div>
+                          <CardTitle className="text-xl">{selectedCity}</CardTitle>
+                          <p className="text-sm text-muted-foreground">
+                            {cities.find(c => c.name === selectedCity)?.online} онлайн
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        variant="outline"
+                        onClick={() => setChatView('wall')}
+                      >
+                        <Icon name="Newspaper" className="mr-2 h-4 w-4" />
+                        Стена города
+                      </Button>
+                    </div>
+                  </CardHeader>
+                </Card>
+
+                <Card>
+                  <CardContent className="p-0">
+                    <div className="h-[500px] flex flex-col">
+                      <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                        {mockMessages.map((msg) => (
+                          <div
+                            key={msg.id}
+                            className={`flex gap-3 ${msg.isOwn ? 'flex-row-reverse' : ''}`}
+                          >
+                            <Avatar className="h-8 w-8">
+                              <AvatarFallback className="text-xs">{msg.user[0]}</AvatarFallback>
+                            </Avatar>
+                            <div className={`flex-1 ${msg.isOwn ? 'text-right' : ''}`}>
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-sm font-semibold">{msg.user}</span>
+                                <span className="text-xs text-muted-foreground">{msg.time}</span>
+                              </div>
+                              <div
+                                className={`inline-block p-3 rounded-lg ${
+                                  msg.isOwn
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'bg-muted'
+                                }`}
+                              >
+                                {msg.text}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="border-t p-4">
+                        <div className="flex gap-2">
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            onClick={() => setShowStickerPicker(!showStickerPicker)}
+                          >
+                            <Icon name="Smile" className="h-5 w-5" />
+                          </Button>
+                          <input
+                            type="text"
+                            placeholder="Написать сообщение..."
+                            value={messageText}
+                            onChange={(e) => setMessageText(e.target.value)}
+                            className="flex-1 px-4 py-2 rounded-lg border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                          />
+                          <Button>
+                            <Icon name="Send" className="h-5 w-5" />
+                          </Button>
+                        </div>
+
+                        {showStickerPicker && (
+                          <div className="mt-3 p-3 rounded-lg border bg-card">
+                            <div className="space-y-3">
+                              {stickerPacks.map((pack) => (
+                                <div key={pack.id}>
+                                  <div className="flex items-center justify-between mb-2">
+                                    <span className="text-sm font-semibold flex items-center gap-2">
+                                      {pack.emoji} {pack.name}
+                                    </span>
+                                    <Badge variant="secondary" className="text-xs">
+                                      <Icon name="Coins" className="h-3 w-3 mr-1" />
+                                      {pack.price} FC
+                                    </Badge>
+                                  </div>
+                                  <div className="flex gap-2">
+                                    {pack.stickers.map((sticker, idx) => (
+                                      <button
+                                        key={idx}
+                                        className="text-2xl p-2 hover:bg-muted rounded-lg transition-colors"
+                                        onClick={() => {
+                                          setMessageText(messageText + sticker);
+                                          setShowStickerPicker(false);
+                                        }}
+                                      >
+                                        {sticker}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
+            {chatView === 'wall' && (
+              <div className="space-y-4">
+                <Card>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => setChatView('chat')}
+                        >
+                          <Icon name="ArrowLeft" className="h-5 w-5" />
+                        </Button>
+                        <div>
+                          <CardTitle className="text-xl">Стена {selectedCity}</CardTitle>
+                          <p className="text-sm text-muted-foreground">
+                            Находки и уловы вашего города
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardHeader>
+                </Card>
+
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex gap-3 mb-6">
+                      <Avatar>
+                        <AvatarFallback>Вы</AvatarFallback>
+                      </Avatar>
+                      <Button variant="outline" className="flex-1 justify-start text-muted-foreground">
+                        Поделитесь новостью с городом...
+                      </Button>
+                      <Button>
+                        <Icon name="ImagePlus" className="mr-2 h-4 w-4" />
+                        Фото
+                      </Button>
+                    </div>
+
+                    <div className="space-y-4">
+                      {cityWallPosts.map((post) => (
+                        <Card key={post.id} className="overflow-hidden">
+                          <CardHeader>
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <Avatar>
+                                  <AvatarFallback>{post.user.name[0]}</AvatarFallback>
+                                </Avatar>
+                                <div>
+                                  <div className="flex items-center gap-2">
+                                    <p className="font-semibold">{post.user.name}</p>
+                                    <Badge variant="secondary" className="text-xs">
+                                      <Icon name="Coins" className="h-3 w-3 mr-1" />
+                                      {post.user.fishcoins} FC
+                                    </Badge>
+                                  </div>
+                                  <p className="text-sm text-muted-foreground">
+                                    {post.user.city} • {post.time}
+                                  </p>
+                                </div>
+                              </div>
+                              <Button size="icon" variant="ghost">
+                                <Icon name="MoreVertical" className="h-5 w-5" />
+                              </Button>
+                            </div>
+                          </CardHeader>
+                          <CardContent className="space-y-4">
+                            <p className="text-lg">{post.content}</p>
+                            
+                            <div className="aspect-video bg-gradient-to-br from-primary/10 to-secondary/10 rounded-lg flex items-center justify-center text-6xl">
+                              {post.image}
+                            </div>
+
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <Button variant="ghost" size="sm" className="gap-1">
+                                🔥 {post.reactions.fire}
+                              </Button>
+                              <Button variant="ghost" size="sm" className="gap-1">
+                                ❤️ {post.reactions.heart}
+                              </Button>
+                              <Button variant="ghost" size="sm" className="gap-1">
+                                👏 {post.reactions.clap}
+                              </Button>
+                            </div>
+
+                            <div className="flex items-center justify-between pt-2 border-t">
+                              <div className="flex gap-2">
+                                <Button variant="ghost" size="sm">
+                                  <Icon name="Heart" className="mr-2 h-4 w-4" />
+                                  {post.likes}
+                                </Button>
+                                <Button variant="ghost" size="sm">
+                                  <Icon name="MessageCircle" className="mr-2 h-4 w-4" />
+                                  {post.comments}
+                                </Button>
+                                <Button variant="ghost" size="sm">
+                                  <Icon name="Reply" className="mr-2 h-4 w-4" />
+                                  Ответить
+                                </Button>
+                              </div>
+                              <Button variant="ghost" size="sm">
+                                <Icon name="Flag" className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Icon name="ShoppingBag" className="h-5 w-5 text-accent" />
+                      Магазин стикерпаков
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid md:grid-cols-3 gap-4">
+                      {stickerPacks.map((pack) => (
+                        <Card key={pack.id} className="hover:shadow-md transition-shadow">
+                          <CardContent className="pt-6 text-center">
+                            <div className="text-5xl mb-3">{pack.emoji}</div>
+                            <h4 className="font-bold mb-2">{pack.name}</h4>
+                            <div className="flex justify-center gap-1 mb-3">
+                              {pack.stickers.slice(0, 4).map((sticker, idx) => (
+                                <span key={idx} className="text-xl">{sticker}</span>
+                              ))}
+                            </div>
+                            <Button variant="outline" className="w-full">
+                              <Icon name="Coins" className="mr-2 h-4 w-4" />
+                              {pack.price} FC
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </main>
