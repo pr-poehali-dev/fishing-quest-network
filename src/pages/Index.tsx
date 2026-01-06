@@ -4,7 +4,26 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useTheme } from '@/components/ThemeProvider';
 import Icon from '@/components/ui/icon';
+
+const ThemeToggle = () => {
+  const { theme, setTheme } = useTheme();
+
+  return (
+    <Button
+      size="icon"
+      variant="ghost"
+      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+    >
+      {theme === 'dark' ? (
+        <Icon name="Sun" className="h-5 w-5" />
+      ) : (
+        <Icon name="Moon" className="h-5 w-5" />
+      )}
+    </Button>
+  );
+};
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('feed');
@@ -154,6 +173,7 @@ const Index = () => {
                 <Icon name="Coins" className="h-4 w-4" />
                 {userFishcoins} FC
               </div>
+              <ThemeToggle />
               <Button size="icon" variant="ghost">
                 <Icon name="MessageCircle" className="h-5 w-5" />
               </Button>
