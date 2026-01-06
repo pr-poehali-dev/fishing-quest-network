@@ -185,123 +185,112 @@ const Index = () => {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 md:hidden">
-            <TabsTrigger value="feed">Лента</TabsTrigger>
-            <TabsTrigger value="cities">Города</TabsTrigger>
-            <TabsTrigger value="map">Карта</TabsTrigger>
-            <TabsTrigger value="profile">Я</TabsTrigger>
-            <TabsTrigger value="communities">Клубы</TabsTrigger>
-            <TabsTrigger value="rating">Топ</TabsTrigger>
+      <main className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-6 md:hidden sticky top-16 z-40 bg-background/95 backdrop-blur">
+            <TabsTrigger value="feed" className="text-xs">Лента</TabsTrigger>
+            <TabsTrigger value="cities" className="text-xs">Города</TabsTrigger>
+            <TabsTrigger value="map" className="text-xs">Карта</TabsTrigger>
+            <TabsTrigger value="profile" className="text-xs">Я</TabsTrigger>
+            <TabsTrigger value="communities" className="text-xs">Клубы</TabsTrigger>
+            <TabsTrigger value="rating" className="text-xs">Топ</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="feed" className="space-y-6">
-            <div className="grid gap-6 lg:grid-cols-3">
-              <div className="lg:col-span-2 space-y-4">
-                <Card>
-                  <CardContent className="pt-6">
-                    <div className="flex gap-3">
-                      <Avatar>
+          <TabsContent value="feed" className="w-full">
+            <div className="w-full max-w-7xl mx-auto grid gap-0 lg:gap-6 lg:grid-cols-3">
+              <div className="lg:col-span-2 w-full space-y-0 md:space-y-4">
+                <Card className="rounded-none md:rounded-lg border-x-0 md:border-x">
+                  <CardContent className="pt-4 pb-3">
+                    <div className="flex gap-2">
+                      <Avatar className="h-10 w-10">
                         <AvatarFallback>Вы</AvatarFallback>
                       </Avatar>
-                      <Button variant="outline" className="flex-1 justify-start text-muted-foreground">
-                        Поделитесь своим уловом или находкой...
+                      <Button variant="ghost" className="flex-1 justify-start text-muted-foreground hover:bg-muted/50 h-10 px-3">
+                        Что нового?
                       </Button>
-                      <Button>
-                        <Icon name="ImagePlus" className="mr-2 h-4 w-4" />
-                        Фото
+                      <Button size="icon" variant="ghost" className="h-10 w-10">
+                        <Icon name="Image" className="h-5 w-5" />
                       </Button>
                     </div>
                   </CardContent>
                 </Card>
 
                 {mockPosts.map((post) => (
-                  <Card key={post.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                    <CardHeader>
+                  <Card key={post.id} className="rounded-none md:rounded-lg border-x-0 md:border-x mb-2 md:mb-0">
+                    <CardHeader className="pb-3 pt-3 px-3 md:px-6">
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <Avatar>
-                            <AvatarFallback>{post.user.name[0]}</AvatarFallback>
+                        <div className="flex items-center gap-2">
+                          <Avatar className="h-9 w-9">
+                            <AvatarFallback className="text-sm">{post.user.name[0]}</AvatarFallback>
                           </Avatar>
                           <div>
-                            <div className="flex items-center gap-2">
-                              <p className="font-semibold">{post.user.name}</p>
-                              <Badge variant="secondary" className="text-xs">
-                                {post.user.rating} ⭐
-                              </Badge>
-                            </div>
-                            <p className="text-sm text-muted-foreground">{post.time}</p>
+                            <p className="font-semibold text-sm">{post.user.name}</p>
+                            <p className="text-xs text-muted-foreground">{post.time}</p>
                           </div>
                         </div>
-                        <Badge variant={post.type === 'fish' ? 'default' : 'outline'}>
-                          {post.type === 'fish' ? '🐟 Улов' : '⚒️ Находка'}
-                        </Badge>
+                        <Button size="icon" variant="ghost" className="h-8 w-8">
+                          <Icon name="MoreVertical" className="h-4 w-4" />
+                        </Button>
                       </div>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div>
-                        <h3 className="text-xl font-bold mb-2">{post.title}</h3>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Icon name="MapPin" className="h-4 w-4" />
+                    <CardContent className="p-0">
+                      <div className="px-3 md:px-6 pb-2">
+                        <p className="text-sm md:text-base mb-1">{post.title}</p>
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <Icon name="MapPin" className="h-3 w-3" />
                           <span>{post.location}</span>
                         </div>
                       </div>
                       
-                      <div className="aspect-video bg-gradient-to-br from-primary/10 to-secondary/10 rounded-lg flex items-center justify-center text-6xl">
+                      <div className="w-full aspect-square max-h-[500px] bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center text-6xl md:text-8xl">
                         {post.type === 'fish' ? '🐟' : '🪙'}
                       </div>
 
-                      <div className="flex items-center justify-between pt-2">
-                        <div className="flex gap-4">
-                          <Button variant="ghost" size="sm">
-                            <Icon name="Heart" className="mr-2 h-4 w-4" />
-                            {post.likes}
+                      <div className="px-3 md:px-6 py-2">
+                        <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+                          <span>{post.likes} отметок "Нравится"</span>
+                          <span>{post.comments} комментариев</span>
+                        </div>
+                        
+                        <div className="flex items-center border-t pt-1">
+                          <Button variant="ghost" size="sm" className="flex-1 h-9">
+                            <Icon name="Heart" className="mr-1 h-4 w-4" />
+                            <span className="text-xs">Нравится</span>
                           </Button>
-                          <Button variant="ghost" size="sm">
-                            <Icon name="MessageCircle" className="mr-2 h-4 w-4" />
-                            {post.comments}
+                          <Button variant="ghost" size="sm" className="flex-1 h-9">
+                            <Icon name="MessageCircle" className="mr-1 h-4 w-4" />
+                            <span className="text-xs">Написать</span>
                           </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="sm"
-                            onClick={() => {
-                              setActiveTab('map');
-                              setSelectedLocation(post.id);
-                            }}
-                          >
-                            <Icon name="MapPin" className="mr-2 h-4 w-4" />
-                            На карте
+                          <Button variant="ghost" size="sm" className="flex-1 h-9">
+                            <Icon name="Share2" className="mr-1 h-4 w-4" />
+                            <span className="text-xs">Поделиться</span>
                           </Button>
                         </div>
-                        <Button variant="ghost" size="sm">
-                          <Icon name="Share2" className="h-4 w-4" />
-                        </Button>
                       </div>
                     </CardContent>
                   </Card>
                 ))}
               </div>
 
-              <div className="space-y-4">
+              <div className="hidden lg:block space-y-4 px-4">
                 <Card>
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
+                    <CardTitle className="flex items-center gap-2 text-base">
                       <Icon name="Trophy" className="h-5 w-5 text-accent" />
                       Топ рыбаков недели
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-3">
+                  <CardContent className="space-y-2">
                     {topUsers.map((user, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                        <div className="flex items-center gap-3">
-                          <span className="text-2xl">{user.badge}</span>
+                      <div key={index} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xl">{user.badge}</span>
                           <div>
-                            <p className="font-semibold">{user.name}</p>
-                            <p className="text-sm text-muted-foreground">{user.catches} записей</p>
+                            <p className="font-semibold text-sm">{user.name}</p>
+                            <p className="text-xs text-muted-foreground">{user.catches} записей</p>
                           </div>
                         </div>
-                        <Badge variant="secondary">{user.rating}</Badge>
+                        <Badge variant="secondary" className="text-xs">{user.rating}</Badge>
                       </div>
                     ))}
                   </CardContent>
@@ -309,16 +298,16 @@ const Index = () => {
 
                 <Card>
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
+                    <CardTitle className="flex items-center gap-2 text-base">
                       <Icon name="Calendar" className="h-5 w-5 text-primary" />
                       События
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-3">
+                  <CardContent className="space-y-2">
                     {upcomingEvents.map((event, index) => (
-                      <div key={index} className="p-3 rounded-lg border hover:bg-muted/50 transition-colors cursor-pointer">
-                        <p className="font-semibold mb-1">{event.title}</p>
-                        <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <div key={index} className="p-2 rounded-lg border hover:bg-muted/50 transition-colors cursor-pointer">
+                        <p className="font-semibold text-sm mb-1">{event.title}</p>
+                        <div className="flex items-center justify-between text-xs text-muted-foreground">
                           <span className="flex items-center gap-1">
                             <Icon name="Calendar" className="h-3 w-3" />
                             {event.date}
